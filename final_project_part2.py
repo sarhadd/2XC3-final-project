@@ -44,6 +44,6 @@ def a_star(G, s, d, h):
         curr = pred[curr]
     shortest_path.reverse()
 
-    # return ({predecessor dictionary}, shortest path the algorithm determines from s to d)
-    return dist[d], shortest_path
+    # return (predecessor dictionary, shortest path the algorithm determines from s to d)
+    return pred, shortest_path
 
