@@ -65,7 +65,7 @@ G = Graph(graph , weights)
 #print(len(graph))
     
     
-# building the heuristic (but how is this will be turn into a guess?? Youtube watch! )
+# building the heuristic 
 def build_heuristic(destination): 
     h = {}
     lat_d, lon_d = stations[destination]
@@ -98,5 +98,102 @@ def build_heuristic(destination):
 # dist_d = dijkstra(G, s)
 # print("A* cost: ", cost_a)
 # print("Dijkstra distance to d: ", dist_d[d]) 
+
+########################        Time Algorithm          ##############################
+
+def time_algorithms(G, s, d):
+    h = build_heuristic(d)
+    
+    # For A*
+    start = time.time()
+    _,path_a = a_star(G, s,d, h)
+    t_a = time.time() - start
+    
+    # For Dijkstra
+    start = time.time()
+    dist_d = dijkstra(G, s)
+    t_d = time.time() - start
+    
+    return t_a, t_d, path_a
+
+######################## Runtime Experiment & Line Analysis ##############################
+
+line_map = {}
+with open("london_connections.csv", "r") as file:
+    reader = csv.DictReader(file)
+    
+    for row in reader: 
+        s1 = int(row["station1"])
+        s2 = int(row["station2"])
+        line = row["line"]
+        
+        line_map[(s1,s2)] = line
+        line_map[(s2,s1)] = line
+        
+# Counting transfers between lines
+def count_transfers(path):
+    lines_used = []
+    for i in range(len(path) - 1):
+        u = path[i]
+        v = path[i + 1]
+        lines_used.append(line_map[(u, v)])
+    
+    transfers = 0
+    for i in range(1, len(lines_used)):
+        if lines_used[i] != lines_used[i - 1]:
+            transfers += 1  
+    return transfers
+
+
+results = []
+
+nodes = list(stations.keys()) 
+for s in nodes: 
+    for d in nodes:
+        if s != d:
+            t_a, t_d, path_a = time_algorithms(G,s,d)
+            
+            transfers = count_transfers(path_a)
+            
+            results.append({
+                "s" : s, 
+                "d" : d,
+                "t_a": t_a,
+                "t_d": t_d,
+                "diff": t_d - t_a, # if this is positive then A* is faster 
+                "transfers": transfers
+            })
+
+a_better = [r for r in results if r["t_a"] < r["t_d"]]
+d_better = [r for r in results if r["t_d"] < r["t_a"]]
+similar = [r for r in results if abs(r["t_a"] - r["t_d"]) < 1e-5]
+
+same_line = [r for r in results if r["transfers"] == 0]
+one_transfer = [r for r in results if r["transfers"] == 1]
+many_transfers = [r for r in results if r["transfers"] >= 2]
+
+# print("A* better:", len(a_better))
+# print("Dijkstra better:", len(d_better))
+# print("Similar:", len(similar))
+
+def avg_time(data, key): 
+    total = 0
+    for r in data: 
+        total += r[key]
+    return total / len(data)
+
+print("\nSame line:")
+print("A* :", avg_time(same_line, "t_a"))
+print("Dijkstra: ", avg_time(same_line, "t_d"))
+
+print("\nOne transfer:")
+print("A* :", avg_time(one_transfer, "t_a"))
+print("Dijkstra: ", avg_time(one_transfer, "t_d"))
+
+print("\nMany transfers:")
+print("A* :", avg_time(many_transfers, "t_a"))
+print("Dijkstra: ", avg_time(many_transfers, "t_d"))
+
+
 
 
