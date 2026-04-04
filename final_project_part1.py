@@ -206,25 +206,6 @@ def bellman_ford_approx(G, source, k):
     return dist, relax_count
 
 
-def total_dist(dist):
-    total = 0
-    for key in dist.keys():
-        total += dist[key]
-    return total
-
-def create_random_complete_graph(n,upper):
-    G = DirectedWeightedGraph()
-    for i in range(n):
-        G.add_node(i)
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                G.add_edge(i,j,random.randint(1,upper))
-    return G
-
-import matplotlib.pyplot as plt
-
-
 # --------------- Experiment 1: Relative Error vs k ---------------
 
 def experiment1(n, upper, ks):

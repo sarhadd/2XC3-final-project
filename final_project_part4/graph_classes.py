@@ -34,15 +34,28 @@ class Graph:
 
 # references: https://www.w3schools.com/python/python_inheritance.asp 
 class WeightedGraph(Graph): 
+
+    def __init__(self):
+        super().__init__()
+        self.weights = {}
+
+    def add_edge(self, node1, node2, weight):
+        super().add_edge(node1, node2)
+        self.weights[(node1, node2)] = weight
+
+    def are_connected(self, node1, node2):
+        return node2 in self.adj[node1]
+
     def w(self, node1, node2):
         if self.are_connected(node1, node2):
             return self.weights[(node1, node2)]
         
 # references: https://www.geeksforgeeks.org/python/access-modifiers-in-python-public-private-and-protected/ 
 class HeuristicGraph(WeightedGraph):         
-    def __heuristic(self, h): 
-        # create the heuristic??? 
-        self.h = h 
+    def __init__(self, heuristic):
+        super().__init__()
+        self._heuristic = heuristic
 
     def get_heuristic(self): 
-        return self.h
+        return self.heuristic
+    
