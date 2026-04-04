@@ -205,51 +205,9 @@ def bellman_ford_approx(G, source, k):
 
     return dist, relax_count
 
+# --------------- Experiment 1: Relative Error vs Graph Size ---------------
 
-# --------------- Experiment 1: Relative Error vs k ---------------
-
-def experiment1(n, upper, ks):
-    dij_errors = []
-    bf_errors = []
-
-    G = create_random_complete_graph(n, upper)
-
-    # Compute exact distances
-    exact_dij = dijkstra(G, 0)
-    exact_bf = bellman_ford(G, 0)
-
-    for k in ks:
-        # Compute Approximate distances
-        approx_dij, _ = dijkstra_approx(G, 0, k)
-        approx_bf, _ = bellman_ford_approx(G, 0, k)
-
-        # Compute relative errors
-        dij_error = (total_dist(approx_dij) - total_dist(exact_dij)) / total_dist(exact_dij)
-        bf_error = (total_dist(approx_bf) - total_dist(exact_bf)) / total_dist(exact_bf)
-        dij_errors.append(dij_error)
-        bf_errors.append(bf_error)
-
-    return ks, dij_errors, bf_errors
-
-n = 200
-upper = 10
-ks = [1, 2, 3, 5, 10, 20]
-
-ks_out, dij_errors, bf_errors = experiment1(n, upper, ks)
-
-# plt.plot(ks_out, dij_errors, label="Dijkstra Approximation")
-# plt.plot(ks_out, bf_errors, label="Bellman-Ford Approximation")
-# plt.title("Experiment 1: Relative Error vs k capacity")
-# plt.xlabel("k (Relaxation Capacity)")
-# plt.ylabel("Relative Error")
-# plt.grid(True)
-# plt.legend()
-# plt.show()
-
-
-# --------------- Experiment 2: Relative Error vs Graph Size ---------------
-
-def experiment2(ns, upper, k):
+def experiment1(ns, upper, k):
     dij_errors = []
     bf_errors = []
 
@@ -276,11 +234,11 @@ ns = [50, 100, 150, 200]
 upper = 10
 k = 5
 
-ns_out, dij_errors, bf_errors = experiment2(ns, upper, k)
+ns_out, dij_errors, bf_errors = experiment1(ns, upper, k)
 
 # plt.plot(ns_out, dij_errors, label="Dijkstra Approximation")
 # plt.plot(ns_out, bf_errors, label="Bellman-Ford Approximation")
-# plt.title("Experiment 2: Relative Error vs Graph Size")
+# plt.title("Experiment 1: Relative Error vs Graph Size")
 # plt.xlabel("n (Number of Nodes)")
 # plt.ylabel("Relative Error")
 # plt.grid(True)
@@ -288,10 +246,9 @@ ns_out, dij_errors, bf_errors = experiment2(ns, upper, k)
 # plt.show()
 
 
+# --------------- Experiment 2: Relative Error vs Density ---------------
 
-# --------------- Experiment 3: Relative Error vs Graph Size ---------------
-
-def experiment3(n, ps, upper, k):
+def experiment2(n, ps, upper, k):
     dij_errors = []
     bf_errors = []
 
@@ -320,12 +277,53 @@ ps = [0.05, 0.1, 0.2, 0.5]
 upper = 10
 k = 5
 
-ps_out, dij_errors, bf_errors = experiment3(n, ps, upper, k)
+ps_out, dij_errors, bf_errors = experiment2(n, ps, upper, k)
 
-# plt.plot(ps_out, dij_errors, label="Dijkstra Approximation")
-# plt.plot(ps_out, bf_errors, label="Bellman-Ford Approximation")
-# plt.title("Experiment 3: Relative Error vs Density")
-# plt.xlabel("Density p")
+plt.plot(ps_out, dij_errors, label="Dijkstra Approximation")
+plt.plot(ps_out, bf_errors, label="Bellman-Ford Approximation")
+plt.title("Experiment 2: Relative Error vs Density")
+plt.xlabel("Density p")
+plt.ylabel("Relative Error")
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+# --------------- Experiment 3: Relative Error vs k ---------------
+
+def experiment3(n, upper, ks):
+    dij_errors = []
+    bf_errors = []
+
+    G = create_random_complete_graph(n, upper)
+
+    # Compute exact distances
+    exact_dij = dijkstra(G, 0)
+    exact_bf = bellman_ford(G, 0)
+
+    for k in ks:
+        # Compute Approximate distances
+        approx_dij, _ = dijkstra_approx(G, 0, k)
+        approx_bf, _ = bellman_ford_approx(G, 0, k)
+
+        # Compute relative errors
+        dij_error = (total_dist(approx_dij) - total_dist(exact_dij)) / total_dist(exact_dij)
+        bf_error = (total_dist(approx_bf) - total_dist(exact_bf)) / total_dist(exact_bf)
+        dij_errors.append(dij_error)
+        bf_errors.append(bf_error)
+
+    return ks, dij_errors, bf_errors
+
+n = 200
+upper = 10
+ks = [1, 2, 3, 5, 10, 20]
+
+ks_out, dij_errors, bf_errors = experiment3(n, upper, ks)
+
+# plt.plot(ks_out, dij_errors, label="Dijkstra Approximation")
+# plt.plot(ks_out, bf_errors, label="Bellman-Ford Approximation")
+# plt.title("Experiment 3: Relative Error vs k capacity")
+# plt.xlabel("k (Relaxation Capacity)")
 # plt.ylabel("Relative Error")
 # plt.grid(True)
 # plt.legend()
@@ -349,12 +347,12 @@ k = 5
 
 relax_dij, relax_bf = experiment4(n, upper, k)
 
-plt.hist(relax_dij, bins=range(0, k+2), alpha=0.5, label="Dijkstra Approx")
-plt.hist(relax_bf, bins=range(0, k+2), alpha=0.5, label="Bellman-Ford Approx")
-plt.title(f"Experiment 4: Distribution of relax_count (k=5)")
-plt.xlabel("Relax Count")
-plt.ylabel("Number of Vertices")
-plt.xticks(range(0, k+1))
-plt.grid(axis='y')
-plt.legend()
-plt.show()
+# plt.hist(relax_dij, bins=range(0, k+2), alpha=0.5, label="Dijkstra Approx")
+# plt.hist(relax_bf, bins=range(0, k+2), alpha=0.5, label="Bellman-Ford Approx")
+# plt.title(f"Experiment 4: Distribution of relax_count (k=5)")
+# plt.xlabel("Relax Count")
+# plt.ylabel("Number of Vertices")
+# plt.xticks(range(0, k+1))
+# plt.grid(axis='y')
+# plt.legend()
+# plt.show()
