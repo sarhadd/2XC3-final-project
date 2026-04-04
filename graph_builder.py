@@ -15,13 +15,13 @@ with open("london_stations.csv", "r") as file:
         
         stations[stations_id] = (lat, lon)
         
-        
-# print(list(stations.items())[:5])
+  
+# Computing Euclidean distance between two stations
 def distance(lat1,lon1, lat2,lon2 ):
     return math.sqrt((lat1 - lat2 ) ** 2 + (lon1 - lon2)**2)
     
 
-# Building the graph (adjacency list)
+# Building the graph (adjacency list) and storing weights 
 class Graph:
     def __init__(self, adj, weights):
         self.adj = adj
@@ -44,7 +44,7 @@ with open("london_connections.csv", "r") as file:
         s1 = int(row["station1"])
         s2 = int(row["station2"])
         
-        # Using 1 for now instead of weights 
+        
         lat1, lon1 = stations[s1]
         lat2, lon2 = stations[s2]
         
@@ -65,7 +65,7 @@ G = Graph(graph , weights)
 #print(len(graph))
     
     
-# building the heuristic 
+# building the heuristic: distance from each node to destination
 def build_heuristic(destination): 
     h = {}
     lat_d, lon_d = stations[destination]
@@ -118,6 +118,7 @@ def time_algorithms(G, s, d):
 
 ######################## Runtime Experiment & Line Analysis ##############################
 
+# Map each edge to its subway line (to analyze tranfers in path)
 line_map = {}
 with open("london_connections.csv", "r") as file:
     reader = csv.DictReader(file)
@@ -130,7 +131,7 @@ with open("london_connections.csv", "r") as file:
         line_map[(s1,s2)] = line
         line_map[(s2,s1)] = line
         
-# Counting transfers between lines
+# Counting ho many times the path chnages subway lines (transfers)
 def count_transfers(path):
     lines_used = []
     for i in range(len(path) - 1):
@@ -144,7 +145,7 @@ def count_transfers(path):
             transfers += 1  
     return transfers
 
-
+# Running experiments on all station pairs and record runtime and number of transfers
 results = []
 
 nodes = list(stations.keys()) 
@@ -164,10 +165,12 @@ for s in nodes:
                 "transfers": transfers
             })
 
+# Grouping results based on runtime comparison
 a_better = [r for r in results if r["t_a"] < r["t_d"]]
 d_better = [r for r in results if r["t_d"] < r["t_a"]]
 similar = [r for r in results if abs(r["t_a"] - r["t_d"]) < 1e-5]
 
+# Grouping results based on number of transfers
 same_line = [r for r in results if r["transfers"] == 0]
 one_transfer = [r for r in results if r["transfers"] == 1]
 many_transfers = [r for r in results if r["transfers"] >= 2]
@@ -176,6 +179,7 @@ many_transfers = [r for r in results if r["transfers"] >= 2]
 # print("Dijkstra better:", len(d_better))
 # print("Similar:", len(similar))
 
+# Computing average rune time for given group of results
 def avg_time(data, key): 
     total = 0
     for r in data: 
