@@ -4,11 +4,11 @@ class Graph:
         self.adj = {}
         self.weights = {}
 
-    # def are_connected(self, node1, node2):
-    #     for neighbour in self.adj[node1]:
-    #         if neighbour == node2:
-    #             return True
-    #     return False
+    def are_connected(self, node1, node2):
+        for neighbour in self.adj[node1]:
+            if neighbour == node2:
+                return True
+        return False
 
     def get_adj_nodes(self, node):
         return self.adj[node]
@@ -21,8 +21,8 @@ class Graph:
             self.adj[node1].append(node2)
         self.weights[(node1, node2)] = weight
 
-    def w(self, node): 
-        return 1 # i assume? 
+    def w(self, node1, node2): 
+        return 1
 
     # def w(self, node1, node2):
     #     if self.are_connected(node1, node2):
@@ -37,14 +37,14 @@ class WeightedGraph(Graph):
 
     def __init__(self):
         super().__init__()
-        self.weights = {}
+        # self.weights = {}
 
-    def add_edge(self, node1, node2, weight):
-        super().add_edge(node1, node2)
-        self.weights[(node1, node2)] = weight
+    # def add_edge(self, node1, node2, weight):
+    #     super().add_edge(node1, node2)
+    #     self.weights[(node1, node2)] = weight
 
-    def are_connected(self, node1, node2):
-        return node2 in self.adj[node1]
+    # def are_connected(self, node1, node2):
+    #     return node2 in self.adj[node1]
 
     def w(self, node1, node2):
         if self.are_connected(node1, node2):
@@ -54,7 +54,7 @@ class WeightedGraph(Graph):
 class HeuristicGraph(WeightedGraph):         
     def __init__(self, heuristic):
         super().__init__()
-        self._heuristic = heuristic
+        self.heuristic = heuristic
 
     def get_heuristic(self): 
         return self.heuristic
