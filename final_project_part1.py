@@ -2,9 +2,7 @@ import min_heap
 import random
 
 import matplotlib.pyplot as plt
-import time
-import random
-
+import time, math
 
 
 class DirectedWeightedGraph:
@@ -279,14 +277,14 @@ k = 5
 
 ps_out, dij_errors, bf_errors = experiment2(n, ps, upper, k)
 
-plt.plot(ps_out, dij_errors, label="Dijkstra Approximation")
-plt.plot(ps_out, bf_errors, label="Bellman-Ford Approximation")
-plt.title("Experiment 2: Relative Error vs Density")
-plt.xlabel("Density p")
-plt.ylabel("Relative Error")
-plt.grid(True)
-plt.legend()
-plt.show()
+# plt.plot(ps_out, dij_errors, label="Dijkstra Approximation")
+# plt.plot(ps_out, bf_errors, label="Bellman-Ford Approximation")
+# plt.title("Experiment 2: Relative Error vs Density")
+# plt.xlabel("Density p")
+# plt.ylabel("Relative Error")
+# plt.grid(True)
+# plt.legend()
+# plt.show()
 
 
 # --------------- Experiment 3: Relative Error vs k ---------------
@@ -356,3 +354,37 @@ relax_dij, relax_bf = experiment4(n, upper, k)
 # plt.grid(axis='y')
 # plt.legend()
 # plt.show()
+
+
+# --------------- Mystery Algorithm Experiment ---------------
+# This is a simple experiment to show that mystery function runs in n^3!
+
+def time_mystery(n_val, upper=10):
+    timings = []
+
+    for num in n_val:
+        G = create_random_complete_graph(num, upper)
+
+        # How much time taken for that amount of n values, n_vals
+        start = time.time()
+        mystery(G)
+        end = time.time()
+
+        timings.append(end - start)
+
+    return timings
+
+# n-values skipping by 10's
+n_vals = [20, 30, 40, 50, 60, 70, 80]
+timings = time_mystery(n_vals)
+
+# Converting log scale
+log_num = [math.log(num) for num in n_vals]
+log_time = [math.log(t + 1e-6) for t in timings] # 1e-6 added to t to avoid possible log(0) computations
+
+plt.plot(log_num, log_time)
+plt.title("Log/log Runtime Plot of mystery()")
+plt.xlabel("log(n)")
+plt.ylabel("log(time)")
+plt.grid(True)
+plt.show()
